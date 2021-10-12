@@ -1,11 +1,10 @@
 class MoviesController < ApplicationController
 
   
-#   before_action :all_ratings, only: [:show, :new, :edit]
+  before_action :all_ratings, only: [:show, :new, :edit]
   
   def show
-    @ratings_to_show = []
-    @all_ratings = []
+    Movie.set_ratings_to_show(params[:ratings])
     id = params[:id] # retrieve movie ID from URI route
     @movie = Movie.find(id) # look up movie by unique ID
     # will render app/views/movies/show.<extension> by default
@@ -15,7 +14,7 @@ class MoviesController < ApplicationController
     list = []
     params[:ratings].each do |key, value|
       list.append(key)
-    @movies = Movie.with_ratings(list)
+    @movies = Movie.with_ratings()
   end
 
   def new
