@@ -1,10 +1,14 @@
 class MoviesController < ApplicationController
 
   
-  before_action :all_ratings, only: [:show, :new, :edit]
+  before_action :all_ratings
+
+  def all_ratings
+    @all_ratings = Movie.all_ratings
+    @ratings_to_show = Movie.set_ratings_to_show(params[:ratings])
+  end 
   
   def show
-    Movie.set_ratings_to_show(params[:ratings])
     id = params[:id] # retrieve movie ID from URI route
     @movie = Movie.find(id) # look up movie by unique ID
     # will render app/views/movies/show.<extension> by default
@@ -12,9 +16,10 @@ class MoviesController < ApplicationController
 
   def index
     list = []
-    params[:ratings].each do |key, value|
-      list.append(key)
-    @movies = Movie.with_ratings()
+    if params[:ratings] != nil
+      list = params[:ratings].keys
+    end 
+    @movies = Movie.with_ratings(list)
   end
 
   def new
