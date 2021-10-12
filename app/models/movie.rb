@@ -9,7 +9,7 @@ class Movie < ActiveRecord::Base
     if ratings_list is nil 
       Movie.all
     else 
-      Movie.where(rating in ratings_list)
+      Movie.all
     end 
   end
   
