@@ -4,7 +4,8 @@ class MoviesController < ApplicationController
   before_action :all_ratings, only: [:show, :new, :edit]
   
   def show
-    Movie.set_ratings_to_show(params[:ratings])
+    @ratings_to_show = Movie.set_ratings_to_show(params[:ratings])
+    @all_ratings = Movie.all_ratings
     id = params[:id] # retrieve movie ID from URI route
     @movie = Movie.find(id) # look up movie by unique ID
     # will render app/views/movies/show.<extension> by default
