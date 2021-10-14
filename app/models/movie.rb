@@ -1,13 +1,25 @@
 class Movie < ActiveRecord::Base
   
-  def self.with_ratings(ratings_list)
+  def self.with_ratings(ratings_list, column)
   # if ratings_list is an array such as ['G', 'PG', 'R'], retrieve all
   #  movies with those ratings
   # if ratings_list is nil, retrieve ALL movies
     if ratings_list == []
-      Movie.all
+      if column.eql? "Title"
+        Movie.all.order(:title)
+      elsif column.eql? "Release Date"
+        Movie.all.order(:release_date)
+      else 
+        Movie.all
+      end 
     else 
-      Movie.where(rating: ratings_list)
+      if column.eql? "Title"
+        Movie.where(rating: ratings_list).order(:title)
+      elsif column.eql? "Release Date"
+        Movie.where(rating: ratings_list).order(:release_date)
+      else 
+        Movie.where(rating: ratings_list)
+      end 
     end 
   end
   

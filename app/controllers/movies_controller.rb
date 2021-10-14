@@ -1,11 +1,59 @@
 class MoviesController < ApplicationController
 
-  
+  before_action :sesh_ratings
   before_action :all_ratings
-
+  before_action :set_sort
+  before_action :set_column
+  before_action :sesh_column
+#   after_action :save_ratings
+  
+#   before_action set the correct CSS class for each column
+  
+  def save_ratings
+    if params[:ratings]
+      session[:ratings] = params[:ratings]
+    end 
+  end 
+  
+  def sesh_ratings
+#     if params[:ratings]
+#       @rate = params[:ratings]
+#     else 
+#       @rate = session[:ratings]
+#     end 
+    @rate = params[:ratings]
+  end 
+  
+  def sesh_column
+    if params[:column]
+      session[:column] = params[:column]
+    end 
+  end 
+  
+  def set_column 
+    if params[:column]
+      @Highlight = params[:column]
+    elsif session[:column]
+      @Highlight = session[:column]
+    else 
+      @Release = ""
+      @Title = ""
+    end 
+  end 
+  
+  def set_sort 
+    if params[:column] 
+      @col = params[:column]
+    elsif session[:column]
+      @col = session[:column]
+    else
+      @col = " "
+    end 
+  end 
+  
   def all_ratings
     @all_ratings = Movie.all_ratings
-    @ratings_to_show = Movie.set_ratings_to_show(params[:ratings])
+    @ratings_to_show = Movie.set_ratings_to_show(@rate)
   end 
   
   def show
@@ -15,11 +63,11 @@ class MoviesController < ApplicationController
   end
 
   def index
-    list = []
-    if params[:ratings] != nil
-      list = params[:ratings].keys
+    if @ratings_to_show != nil
+      @movies = Movie.with_ratings(@ratings_to_show, @col)
+    else 
+      @movies = Movie.with_ratings([], @col)
     end 
-    @movies = Movie.with_ratings(list)
   end
 
   def new
