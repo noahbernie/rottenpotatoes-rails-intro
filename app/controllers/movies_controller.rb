@@ -1,37 +1,24 @@
 class MoviesController < ApplicationController
 
-  before_action :sesh_ratings
-  before_action :all_ratings
-  before_action :set_sort
+  before_action :set_ratings
   before_action :set_column
-  before_action :sesh_column
-#   after_action :save_ratings
-  
 #   before_action set the correct CSS class for each column
   
-  def save_ratings
+  def set_ratings
     if params[:ratings]
+      @rate = params[:ratings]
       session[:ratings] = params[:ratings]
-    end 
-  end 
-  
-  def sesh_ratings
-#     if params[:ratings]
-#       @rate = params[:ratings]
-#     else 
-#       @rate = session[:ratings]
-#     end 
-    @rate = params[:ratings]
-  end 
-  
-  def sesh_column
-    if params[:column]
-      session[:column] = params[:column]
+    elsif params[:q] 
+      @rate = session[:ratings]
+    else
+      @rate = nil
+      session[:ratings] = nil
     end 
   end 
   
   def set_column 
     if params[:column]
+      session[:column] = params[:column]
       @Highlight = params[:column]
     elsif session[:column]
       @Highlight = session[:column]
@@ -41,21 +28,6 @@ class MoviesController < ApplicationController
     end 
   end 
   
-  def set_sort 
-    if params[:column] 
-      @col = params[:column]
-    elsif session[:column]
-      @col = session[:column]
-    else
-      @col = " "
-    end 
-  end 
-  
-  def all_ratings
-    @all_ratings = Movie.all_ratings
-    @ratings_to_show = Movie.set_ratings_to_show(@rate)
-  end 
-  
   def show
     id = params[:id] # retrieve movie ID from URI route
     @movie = Movie.find(id) # look up movie by unique ID
@@ -63,11 +35,10 @@ class MoviesController < ApplicationController
   end
 
   def index
-    if @ratings_to_show != nil
-      @movies = Movie.with_ratings(@ratings_to_show, @col)
-    else 
-      @movies = Movie.with_ratings([], @col)
-    end 
+    @all_ratings = Movie.all_ratings
+    @ratings_to_show = Movie.set_ratings_to_show(@rate)
+    @movies = Movie.with_ratings(@ratings_to_show, @Highlight) 
+    # redirect_to movies_path({"ratings" => session[:ratings], "column" => session[:column]})
   end
 
   def new
