@@ -10,6 +10,7 @@ class MoviesController < ApplicationController
       session[:ratings] = params[:ratings]
     elsif params[:q] 
       @rate = session[:ratings]
+      @redirect_flag = true 
     else
       @rate = nil
       session[:ratings] = nil
@@ -21,6 +22,7 @@ class MoviesController < ApplicationController
       session[:column] = params[:column]
       @Highlight = params[:column]
     elsif session[:column]
+      @redirect_flag = true 
       @Highlight = session[:column]
     else 
       @Release = ""
@@ -38,7 +40,9 @@ class MoviesController < ApplicationController
     @all_ratings = Movie.all_ratings
     @ratings_to_show = Movie.set_ratings_to_show(@rate)
     @movies = Movie.with_ratings(@ratings_to_show, @Highlight) 
-    # redirect_to movies_path({"ratings" => session[:ratings], "column" => session[:column]})
+    if @redirect_flag
+      redirect_to movies_path({"ratings" => session[:ratings], "column" => session[:column]})
+    end 
   end
 
   def new
